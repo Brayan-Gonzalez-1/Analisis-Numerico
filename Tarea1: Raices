@@ -36,23 +36,28 @@ Gx <- function(x) exp(x) / pi
 # Halla la raiz de Fx
 puntoFijo <- function(a,b) 
 {
-  x<-(a+b)/2
-  i<-0
-  while (Gx(x) != x ) 
-  {    
-    error<-abs(a-b)/2
-    if(error > 1.e-8)
-      if (Gx(x) < x) b <- x 
-      else {a <- x}
-      else {break}  
-      
-      x<-(a+b)/2
-      
-      i<-i+1
-      cat("I=",i,"\tG(x) =",Gx(x),"\tX=",x,"\tE=",error,"\n")
-      
+  if(((Gx(a)-a)*(Gx(b)-b))<0){
+    cat("Existe la raiz, porfavor prosiga con el metodo \n")
+    x<-(a+b)/2
+    i<-0
+    while (Gx(x) != x ) 
+    {    
+      error<-abs(a-b)/2
+      if(error > 1.e-8)
+        if (Gx(x) < x) b <- x 
+        else {a <- x}
+        else {break}  
+        
+        x<-(a+b)/2
+        
+        i<-i+1
+        cat("I=",i,"\tG(x) =",Gx(x),"\tX=",x,"\tE=",error,"\n")
+        
+    }
   }
-  
+  else{
+    cat("No existe Raiz, o la Raiz no es unica \n")
+  }
 }
 
 puntoFijo(-3,1)
