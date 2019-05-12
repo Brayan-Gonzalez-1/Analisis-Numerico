@@ -1,0 +1,354 @@
+---
+title: "Taller Individual Analisis Numerico"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+  word_document: default
+---
+
+Realizado por Brayan Jesus Gonzalez Aguilera\
+\
+**Punto 1**\
+\
+Resolver el problema de valor inicial, utilizando el método\ de Runge-Kutta de orden tres y de orden cuatro, obtenga: a.)\ 20 puntos de la solucion con $h=0.1$ y $h=0.2$, b.) Encuentre\ los errores locales y el error global, c.) Realice una grafica que compare la solucion aproximada con la exacta, para la\ ecuacion:\
+$$
+X''+6X-X'=0; X(0)=2, X'(0)=-1
+$$
+
+```{r}
+#Realizado por Brayan Jesus Gonzalez Aguilera
+#Solucion punto 1
+library(deSolve)
+fp = function(t,y, parms){
+  s = y -6*t
+  return(list(s))
+}
+
+h <- 0.1
+h2<- 0.2
+tis= seq(0,20*h,h)
+tis2= seq(0,20*h2,h2)
+#Soluciones por rk3
+sol = ode(c(2,-1), tis, fp, parms=NULL, method = "rk")
+sol2 = ode(c(2,-1), tis2, fp, parms=NULL, method = "rk")
+#Soluciones por rk4/euler
+sol3 = ode(c(2,-1), tis, fp, parms=NULL, method = "euler")
+sol4 = ode(c(2,-1), tis2, fp, parms=NULL, method = "euler")
+exacta <- function(x){ return(exp(x/2)*(2*cos(sqrt(23)*x/2)-4/sqrt(23)*sin(sqrt(23)*x/2)))} 
+
+#Grafica Solucion exacta y Puntos de la solucion
+plot(exacta,xlim=c(-1,1),ylim=c(-5,5), col="red", xlab = "X", ylab= "Y",main="Punto 1")
+par(new=T)
+points(tis,sol[,3],xlim=c(-1,1),ylim=c(-5,5),col="blue")
+points(tis2,sol2[,3],xlim=c(-1,1),ylim=c(-5,5),col="purple")
+points(tis,sol3[,3],xlim=c(-1,1),ylim=c(-5,5),col="black")
+points(tis2,sol4[,3],xlim=c(-1,1),ylim=c(-5,5),col="orange")
+
+
+options( digits = 5)
+v <- c()
+v2 <- c()
+er <- c()
+
+v3 <- c()
+v4 <- c()
+er2 <- c()
+
+v5 <- c()
+v6 <- c()
+er3 <- c()
+
+v7 <- c()
+v8 <- c()
+er4 <- c()
+
+for( i in 1:20 ){
+  v <- c(v,sol[i,3])
+  v2 <- c(v2,exacta(i*h) )
+  er <- c(er, abs( sol[i,3] - exacta(i*h) ) )
+}
+
+for( i in 1:20 ){
+  v3 <- c(v3,sol2[i,3])
+  v4 <- c(v4,exacta(i*h2) )
+  er2 <- c(er2, abs( sol2[i,3] - exacta(i*h2) ) )
+}
+
+for( i in 1:20 ){
+  v5 <- c(v5,sol3[i,3])
+  v6 <- c(v6,exacta(i*h) )
+  er3 <- c(er3, abs( sol3[i,3] - exacta(i*h) ) )
+}
+
+for( i in 1:20 ){
+  v7 <- c(v7,sol4[i,3])
+  v8 <- c(v8,exacta(i*h2) )
+  er4 <- c(er4, abs( sol4[i,3] - exacta(i*h2) ) )
+}
+
+
+tabla = cbind( v[1:20] , cbind( v2[1:20], er[1:20]) )
+colnames(tabla) = c("Solucion Numerica rk con h = 0.1", "Solucion Exacta ","Error")
+tabla
+
+tabla2= cbind( v3[1:20] , cbind( v4[1:20], er2[1:20]) )
+colnames(tabla2) = c("Solucion Numerica rk con h = 0.2", "Solucion Exacta ","Error")
+tabla2
+
+tabla3 = cbind( v5[1:20] , cbind( v6[1:20], er3[1:20]) )
+colnames(tabla3) = c("Solucion Numerica euler con h = 0.1", "Solucion Exacta ","Error")
+tabla3
+
+tabla4= cbind( v7[1:20] , cbind( v8[1:20], er4[1:20]) )
+colnames(tabla4) = c("Solucion Numerica euler con h = 0.2", "Solucion Exacta ","Error")
+tabla4
+```
+\
+**Punto 3**\
+\
+Solucionar la siguiente ecuación utilice el método de Runge-Kutta de cuarto orden con $h = 0.1$, grafique la solución, obtenga 20 puntos de la solución:
+$$
+Y''-Y'-X+Y+1=0; Y(0)=1, Y'(0)=2
+$$
+En este caso como no hay un valor para $X$ tome el valor de $X=0$
+```{r}
+#Realizado por Brayan Jesus Gonzalez Aguilera
+#Solucion Punto 3
+fp = function(t,y, parms){
+  s = y - t - 1
+  return(list(s))
+}
+
+h <- 0.1
+tis= seq(0,20*h,h)
+
+require(deSolve)
+sol = ode(c(2,1), tis, fp, parms=NULL, method = "euler")
+plot(sol,main="Punto 3")
+par(new=T)
+points(tis,sol[,3],col="red")
+```
+\
+**Punto 5**\
+\
+Utilizando la ecuación del problema uno verifique la sensibilidad y la estabilidad del método.
+```{r}
+#Realizado por Brayan Jesus Gonzalez Aguilera
+#Solucion punto 5
+library(deSolve)
+fp = function(t,y, parms){
+  s = y -6*t
+  return(list(s))
+}
+
+h <- 0.1
+tis= seq(0,20*h,h)
+require(deSolve)
+sol = ode(c(2,-1), tis, fp, parms=NULL, method = "rk")
+sol2 = ode(c(2,-1), tis, fp, parms=NULL, method = "euler")
+exacta <- function(x){ return(exp(x/2)*(2*cos(sqrt(23)*x/2)-4/sqrt(23)*sin(sqrt(23)*x/2)))} 
+
+#Grafica Solucion exacta y Puntos de la solucion
+plot(exacta,xlim=c(0,2),ylim=c(-5,5),col="red", xlab = "X", ylab= "Y", main="Punto 5")
+par(new=T)
+points(tis,sol[,3],xlim=c(0,1),ylim=c(-3,3),col="blue")
+points(tis,sol2[,3],xlim=c(0,1),ylim=c(-3,3),col="black")
+
+
+#options( digits = 5)
+v <- c()
+v2 <- c()
+er <- c()
+
+v3 <- c()
+v4 <- c()
+er2 <- c()
+
+for( i in 1:20 ){
+  v <- c(v,sol[i,3])
+  v2 <- c(v2,exacta(i*h) )
+  er <- c(er, abs( sol[i,3] - exacta(i*h) ) )
+}
+
+for( i in 1:20 ){
+  v3 <- c(v3,sol2[i,3])
+  v4 <- c(v4,exacta(i*h) )
+  er2 <- c(er2, abs( sol2[i,3] - exacta(i*h) ) )
+}
+
+
+#Soluciones con PVI correcto
+tabla = cbind( v[1:20] , cbind( v2[1:20], er[1:20]) )
+colnames(tabla) = c("rk con h = 0.1", "Solucion Exacta ","Error")
+tabla
+
+tabla2 = cbind( v3[1:20] , cbind( v4[1:20], er[1:20]) )
+colnames(tabla2) = c("euler con h = 0.1", "Solucion Exacta ","Error")
+tabla2
+
+
+#Soluciones con PVI incorrecto
+sol3 = ode(c(2.3,-1.2), tis, fp, parms=NULL, method = "rk")
+sol4 = ode(c(2.3,-1.2), tis, fp, parms=NULL, method = "euler")
+points(tis,sol3[,3],xlim=c(0,1),ylim=c(-3,3),col="orange")
+points(tis,sol4[,3],xlim=c(0,1),ylim=c(-3,3),col="purple")
+
+v5 <- c()
+v6 <- c()
+es3 <- c()
+se <- c()
+
+v7 <- c()
+v8 <- c()
+es4 <- c()
+se2 <- c()
+
+for( i in 1:20 ){
+  v5 <- c(v5,sol[i,3])
+  v6 <- c(v6,sol3[i,3])
+  es3 <- c(es3, abs( sol[i,3]/sol3[i,3]) ) 
+  se <- c(se,abs(sol[i,3]-sol3[i,3]))
+}
+
+for( i in 1:20 ){
+  v7 <- c(v7,sol2[i,3])
+  v8 <- c(v8,sol4[i,3])
+  es4 <- c(es4, abs( sol2[i,3]/sol4[i,3]) ) 
+  se2 <- c(se2,abs(sol2[i,3]-sol4[i,3]))
+}
+
+tabla3 = cbind( v5[1:20] , cbind( v6[1:20], es3[1:20]), se[1:20] )
+colnames(tabla3) = c("PVI correcto rk ", "PVI incorrecto rk ","  Estabilidad rk","  Sensibilidad rk")
+tabla3
+
+tabla4 = cbind( v7[1:20] , cbind( v8[1:20], es4[1:20]), se2[1:20] )
+colnames(tabla4) = c("PVI correcto euler", "PVI incorrecto euler"," Estabilidad euler"," Sensibilidad euler")
+tabla4
+
+```
+\
+Como se puede evidenciar en las tablas y graficas nos damos cuenta que el metodo de Runge-Kutta de orden cuatro, o tambien conocido como el metodo de euler, es más sencible y menos estable cuando se le cambian los valores del PVI (Puntos morados cambio del PVI, puntos negros con PVI correcto). En cambio Runge-Kutta de orden 3 no tiene este cambio abrupto siendo mucho más estable y menos sensible que el de euler (Fijarse en los puntos azules como el PVI correcto y los naranjas con PVI incorrecto).\
+\
+**Punto 7**\
+\
+Implemente un método numérico que permite solucionar una ecuación diferencial, teniendo como información adicional 3 puntos de la solución.\
+\
+Resolvere las ecuaciones de Lorenz que tienen 3 puntos iniciales de informacion, siendo las ecuaciones las siguientes:
+\
+$x' = -8/3x + yz$\
+$y'= -10(y-z)$\
+$z' = -xy+28y-z$\
+\
+```{r}
+#Tomado de RevistaDigital_WMora_V16_No1
+library(deSolve)
+a = -8/3; b = -10; c = 28
+yini = c(X = 1, Y = 1, Z = 1)
+Lorenz = function (t, y, parms) {
+with(as.list(y), {
+dX <- a * X + Y * Z
+dY <- b * (Y - Z)
+dZ <- -X * Y + c * Y - Z
+list(c(dX, dY, dZ))
+})
+}
+# Resolvemos para 20 días produciendo una salida cada 0.1 día
+times = seq(from = 0, to = 20, by = 0.1)
+out = ode(y = yini, times = times, func = Lorenz,parms = NULL)
+# Gráfica
+plot(out,col="red",lwd = 2)
+plot(out[,"X"], out[,"Y"], type = "l",col="blue", xlab = "X",
+ylab = "Y", main = "Mariposa")
+```
+\
+**Punto 8**\
+\
+Resolver el sistema homogeneo utilizando el método de Runge-Kutta, compare con la solución exacta, calcule el tamaño del error\
+\
+```{r}
+#Realizado por Brayan Jesus Gonzalez Aguilera
+#Solucion Punto 8
+library(deSolve)
+fp <- function(t,y,parms){
+  s= t-3*y
+  s2= 3*t+7*y
+  return(list(s,s2))
+}
+
+exacta <- function(x){
+  r =((1/3)*exp((-1/2)*(sqrt(3)-1)*x))*((3-2*sqrt(3))*exp(sqrt(3)*x)+3+2*sqrt(3))
+  return(r)
+}
+
+tis = seq(0,2,0.1)
+tis2 = seq(0,4,0.2)
+
+#Solucion euler/rk4 1
+sol = ode(c(2,-1), tis, fp, parms = NULL, method = "rk4")
+
+#Solucion euler/rk4 2
+sol2= ode(c(2,-1), tis2, fp, parms = NULL, method = "rk4")
+
+#Solucion rk3 1
+sol3= rk(c(2,-1), tis, fp, parms = NULL, method = "rk3")
+
+
+#Solucion rk3 2
+sol4= rk(c(2,-1), tis2, fp, parms = NULL, method = "rk3")
+
+options( digits = 5)
+i = 0
+j = 1
+v = c()
+er = c()
+er2 = c()
+while (i <= 2)
+{
+  r = exacta(i)
+  v[j] <- r
+  i = i + 0.1
+  j = j + 1
+}
+v[j] <- exacta(i)
+er<-c(er,abs(sol[,2]-v))
+er2<-c(er2,abs(sol3[,2]-v))
+tabla <- cbind(tis,sol[,2],sol3[,2],v,er,er2)
+colnames(tabla)<-c('X','euler','Rk3','Real','Error euler','Error Rk3')
+tabla
+
+options( digits = 5)
+i <- 0
+j <- 1
+v2 = c()
+er3 = c()
+er4 = c()
+while (i <= 4)
+{
+  r = exacta(i)
+  v2[j] <- r
+  i = i + 0.2
+  j = j + 1
+}
+v2[j] <- exacta(i)
+er3<-c(er,abs(sol2[,2]-v2))
+er4<-c(er2,abs(sol4[,2]-v2))
+tabla2 = cbind(tis2,sol2[,2],sol4[,2],v2,er3,er4)
+colnames(tabla2)<-c('X','euler','Rk3','Real','Error euler','Error Rk3')
+tabla2
+
+
+#Graficas
+plot(tis2,sol2[,2], type = "l",col="blue",xlab="X",ylab="Y", main = "Punto 8")
+lines(tis, sol2[,2], col="red",lty=2)
+
+points(tis, sol3[,2], col="red", pch="|")
+lines(tis, sol3[,2], col="purple",lty=2)
+
+points(tis, sol[,2], col="green", pch="|")
+lines(tis, sol[,2], col="orange",lty=2)
+
+points(tis2, sol4[,2], col="yellow", pch="|")
+lines(tis2, sol4[,2], col="black",lty=2)
+```
+
